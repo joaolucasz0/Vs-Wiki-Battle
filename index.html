@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NNZ (Notnnz) – Ficha de Personagem</title>
+<style>
+/* ===== 1. TOKENS ===== */
+:root{
+  --bg:#12151c; --panel:#1a1e28; --panel2:#212634; --line:#2f3648;
+  --text:#d8dbe4; --muted:#8e95a8; --link:#7ea6e0; --gold:#d8b45f; --warn:#d9826b;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --side:15rem;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--text);font:1rem/1.65 var(--serif)}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ===== 2. LAYOUT ===== */
+.aviso{background:#2a2414;color:var(--gold);font:.85rem var(--sans);padding:.5rem 1rem;text-align:center;border-bottom:1px solid #4a3f1d}
+.wrap{display:grid;grid-template-columns:var(--side) minmax(0,1fr);max-width:1200px;margin:0 auto}
+nav.toc{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:1.5rem 1rem;border-right:1px solid var(--line);font:.9rem var(--sans)}
+nav.toc strong{display:block;margin-bottom:.75rem;color:var(--muted);font-weight:600}
+nav.toc ul{list-style:none;margin:0;padding:0}
+nav.toc ul ul{margin:.1rem 0 .4rem .9rem;border-left:1px solid var(--line)}
+nav.toc a{display:block;padding:.3rem .6rem;color:var(--text);border-left:2px solid transparent}
+nav.toc a:hover{background:var(--panel);text-decoration:none}
+nav.toc a.ativo{color:var(--gold);border-left-color:var(--gold);background:var(--panel)}
+main{padding:1.5rem 2rem 4rem;min-width:0}
+.menu-btn{display:none}
+
+/* ===== 3. TIPOGRAFIA ===== */
+h1{font-size:2.3rem;line-height:1.15;margin:0 0 .2rem}
+h2{font-size:1.55rem;margin:2.5rem 0 1rem;padding-bottom:.35rem;border-bottom:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.6rem 0 .6rem;color:var(--gold)}
+h4{margin:0;font-size:1rem}
+.sub{color:var(--muted);font-style:italic;margin:0 0 1rem}
+.nota{font:.85rem var(--sans);color:var(--muted)}
+sup a{font:.75rem var(--sans)}
+
+/* ===== 4. CABEÇALHO / INFOBOX ===== */
+.cabecalho{display:grid;grid-template-columns:minmax(0,1fr) 19rem;gap:1.5rem;align-items:start}
+.infobox{background:var(--panel);border:1px solid var(--line);font:.9rem/1.4 var(--sans)}
+.infobox .titulo{background:var(--panel2);padding:.6rem .8rem;text-align:center;font-weight:700;border-bottom:1px solid var(--line)}
+.infobox figure{margin:0;padding:.8rem;border-bottom:1px solid var(--line);text-align:center}
+.infobox img{width:100%;height:auto;display:block;border:1px solid var(--line)}
+.infobox figcaption{color:var(--muted);font-size:.8rem;margin-top:.4rem}
+.infobox dl{margin:0}
+.infobox .linha{display:grid;grid-template-columns:7.5rem 1fr;border-bottom:1px solid var(--line)}
+.infobox .linha:last-child{border-bottom:0}
+.infobox dt{background:var(--panel2);padding:.5rem .7rem;color:var(--muted)}
+.infobox dd{margin:0;padding:.5rem .7rem}
+.selo{display:inline-block;border:1px solid var(--gold);color:var(--gold);padding:0 .5rem;font-weight:700}
+
+/* ===== 5. TABELAS ===== */
+.tabela-scroll{overflow-x:auto;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:38rem;font:.92rem/1.5 var(--sans)}
+th,td{padding:.65rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:var(--panel2);color:var(--muted);font-weight:600;position:sticky;top:0}
+tbody tr:nth-child(even){background:var(--panel)}
+tbody th{white-space:nowrap;color:var(--gold)}
+td.valor{font-weight:700;white-space:nowrap}
+.espaco-ref{color:var(--muted);font-style:italic}
+
+/* ===== 6. EXPANSÍVEIS (details) ===== */
+.ferramentas{display:flex;gap:.5rem;margin:0 0 .8rem;font:.85rem var(--sans)}
+button{font:inherit;background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:.3rem .8rem;cursor:pointer}
+button:hover{border-color:var(--gold)}
+details{background:var(--panel);border:1px solid var(--line);margin:0 0 .5rem}
+summary{cursor:pointer;padding:.65rem .9rem;font:600 .95rem var(--sans);list-style:none;display:flex;gap:.6rem;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";display:inline-grid;place-items:center;width:1.2rem;height:1.2rem;border:1px solid var(--line);color:var(--gold);flex:none}
+details[open]>summary::before{content:"–"}
+details[open]>summary{border-bottom:1px solid var(--line)}
+.corpo{padding:.8rem .9rem}
+.corpo p{margin:0 0 .6rem}
+.slot{display:grid;place-items:center;min-height:5.5rem;border:1px dashed var(--line);color:var(--muted);font:.85rem var(--sans);text-align:center;padding:.5rem}
+ul.lista{margin:0;padding-left:1.2rem}
+ul.lista li{margin-bottom:.5rem}
+
+/* ===== 7. REFERÊNCIAS ===== */
+ol.refs{font:.92rem/1.5 var(--sans);padding-left:1.6rem}
+ol.refs li{margin-bottom:.4rem;padding:.2rem .4rem}
+ol.refs li:target{background:#2a2414;outline:1px solid var(--gold)}
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font:.85rem var(--sans)}
+
+/* ===== 7b. DESTAQUES (habilidades especiais e feitos principais) ===== */
+.indef{color:var(--muted);font-weight:700}
+.tag{display:inline-block;font:.75rem var(--sans);border:1px solid var(--gold);color:var(--gold);padding:0 .45rem;margin-left:auto}
+.especial{border:1px solid var(--gold);border-left-width:6px;background:#1f1d17;margin:0 0 1rem}
+.especial header{padding:.7rem .9rem;border-bottom:1px solid #4a3f1d;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.especial h4{font-size:1.15rem;color:var(--gold)}
+.especial .corpo{padding:.8rem .9rem}
+.especial dl{display:grid;grid-template-columns:8rem 1fr;margin:.6rem 0 0;font:.88rem/1.45 var(--sans)}
+.especial dt{color:var(--muted);padding:.3rem 0;border-top:1px solid #3a3320}
+.especial dd{margin:0;padding:.3rem 0;border-top:1px solid #3a3320}
+details.destaque{border-color:var(--gold);background:#1f1d17}
+details.destaque>summary{color:var(--gold)}
+@media (max-width:900px){.especial dl{grid-template-columns:1fr}.especial dd{border-top:0;padding-top:0}}
+
+/* ===== 7c. CAPA DO PERFIL, DOMÍNIO E MATCHUPS ===== */
+.capa{border:1px solid var(--line);margin:0 0 1.5rem;background:var(--panel)}
+.capa-topo{height:6.5rem;background:linear-gradient(100deg,#241d2c,#4a3046 60%,#33263a);position:relative;overflow:hidden}
+.capa-topo svg{position:absolute;right:0;top:0;height:100%;width:45%;opacity:.55}
+.capa-barra{display:flex;gap:1rem;align-items:flex-end;padding:0 1rem .8rem;background:#16181f}
+.avatar-wrap{position:relative;margin-top:-2.6rem;flex:none}
+.avatar{display:block;width:6.5rem;height:6.5rem;border-radius:50%;border:3px solid #d8dbe4;background:#15171e}
+.bandeira{position:absolute;left:50%;bottom:-.8rem;transform:translateX(-50%);width:2.1rem;height:1.5rem;border:1px solid #d8dbe4;display:block}
+.capa-info{padding-top:.7rem;min-width:0}
+.views{display:flex;gap:.4rem;align-items:center;color:var(--muted);font:.8rem var(--sans)}
+.nome-linha{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;font:600 1.9rem/1.2 var(--sans);color:#f1f2f6}
+.epic{font:800 .6rem var(--sans);letter-spacing:.05em;border:1px solid #d8dbe4;border-radius:4px 4px 10px 10px;padding:.25rem .35rem}
+.check{display:inline-grid;place-items:center;width:1.1rem;height:1.1rem;border-radius:50%;background:#3fae6a;color:#fff;font:700 .7rem var(--sans)}
+svg.retrato{display:block;width:100%;height:auto;border:1px solid var(--line)}
+.dominio{background:#171326;margin:0 0 1rem;padding:1.1rem;box-shadow:inset 0 0 0 1px #8b7bd8;border:1px solid #8b7bd8;outline:6px solid #171326;outline-offset:-8px}
+.dominio .tag{border-color:#8b7bd8;color:#b9adf0}
+.dominio h4{font-size:1.35rem;letter-spacing:.04em;color:#b9adf0;margin:0 0 .2rem}
+.dominio ul{columns:2;margin:.5rem 0 .8rem;padding-left:1.2rem;font:.9rem/1.5 var(--sans)}
+blockquote.frase{margin:1rem 0 0;padding:.7rem 1rem;border-left:4px solid var(--gold);background:#1f1d17;color:var(--gold);font-style:italic;font-size:1.05rem}
+.registro{margin-top:3rem;padding:1.2rem;border:2px dashed var(--warn);background:#1d1717}
+.registro h2{color:var(--warn);border-bottom-color:#4a2c26;margin-top:0}
+.estado{display:inline-block;border:2px solid var(--warn);color:var(--warn);padding:.25rem .8rem;font:700 .95rem var(--sans);letter-spacing:.05em;margin:.2rem 0 1rem}
+.versus{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.3fr);gap:1rem;align-items:center;margin:1rem 0}
+.versus .lado{border:1px solid #4a2c26;background:#241b1b;padding:.9rem;font:.92rem/1.5 var(--sans)}
+.versus .nnz{font:700 1.8rem var(--sans);color:var(--gold)}
+.versus .vs{font:800 1.3rem var(--sans);color:var(--warn)}
+.versus ol{margin:.3rem 0 0;padding-left:1.3rem}
+.versus li{margin:.3rem 0}
+.perfil{position:relative;display:inline-block}
+.perfil-link{background:none;border:0;padding:0 .1rem;color:#4d9bff;font:600 1rem var(--sans);cursor:pointer;text-decoration:underline dotted}
+.perfil-link:hover,.perfil-link:focus-visible{color:#9ccbff;background:#16263b;text-decoration:underline}
+.popup{display:none;position:absolute;left:0;top:100%;margin-top:.3rem;z-index:20;width:max-content;max-width:min(15rem,75vw);background:var(--panel2);border:1px solid #4d9bff;padding:.4rem .6rem;font:.8rem/1.4 var(--sans);color:var(--text)}
+.perfil.aberto .popup{display:block}
+.condicoes th{width:10rem}
+@media (max-width:900px){.versus{grid-template-columns:1fr}.versus .vs{text-align:center}.dominio ul{columns:1}.nome-linha{font-size:1.4rem}.capa-barra{align-items:flex-start}}
+
+/* ===== 8. RESPONSIVO ===== */
+@media (max-width:900px){
+  .wrap{display:block}
+  .menu-btn{display:block;position:sticky;top:0;z-index:5;width:100%;text-align:left;padding:.7rem 1rem;border-width:0 0 1px;background:var(--panel)}
+  nav.toc{display:none;position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);background:var(--panel)}
+  nav.toc.aberto{display:block}
+  main{padding:1rem 1rem 3rem}
+  .cabecalho{grid-template-columns:1fr}
+  .infobox{order:-1}
+  h1{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Aviso: referências e imagens ainda serão adicionadas -->
+<div class="aviso">Ficha em construção: imagens são provisórias e as fontes serão adicionadas em breve. Campos com ???? ainda não foram estabelecidos.</div>
+
+<button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="toc">☰ Navegar pelas seções</button>
+
+<div class="wrap">
+
+<!-- ===== NAVEGAÇÃO POR SEÇÕES ===== -->
+<nav class="toc" id="toc" aria-label="Seções da ficha">
+  <strong>Nesta ficha</strong>
+  <ul>
+    <li><a href="#resumo">Resumo</a></li>
+    <li><a href="#perfis">Perfis e estatísticas</a></li>
+    <li><a href="#poderes">Powers and Abilities</a></li>
+    <li><a href="#feats">Feats</a>
+      <ul>
+        <li><a href="#feats-competitivos">Competitive Feats</a></li>
+        <li><a href="#feats-combate">Combat Feats</a></li>
+        <li><a href="#feats-tecnicos">Technical Feats</a></li>
+        <li><a href="#feats-legado">Legacy Feats</a></li>
+      </ul>
+    </li>
+    <li><a href="#fraquezas">Weaknesses</a></li>
+    <li><a href="#referencias">References</a></li>
+    <li><a href="#matchups">Unresolved Matchups</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ===== CABEÇALHO DO PERSONAGEM ===== -->
+<!-- Símbolo reutilizável: personagem encapuzado (ilustração provisória) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="enc" viewBox="0 0 120 120"><rect width="120" height="120" fill="#15171e"/><path d="M34 36C22 32 13 20 15 8c9 4 15 13 21 22zM86 36c12-4 21-16 19-28-9 4-15 13-21 22z" fill="#f1f1f1"/><path d="M60 14c-26 0-38 22-38 46 0 22 8 40 14 60h48c6-20 14-38 14-60 0-24-12-46-38-46z" fill="#4a4d57"/><path d="M60 28c-17 0-27 14-27 32 0 16 10 30 27 30s27-14 27-30c0-18-10-32-27-32z" fill="#0c0d11"/><path d="M44 44c6 4 26 4 32 0-1 14-6 30-16 40-10-10-15-26-16-40z" fill="#f1f1f1"/><ellipse cx="52" cy="55" rx="3" ry="5" fill="#0c0d11"/><ellipse cx="68" cy="55" rx="3" ry="5" fill="#0c0d11"/></symbol></svg>
+
+<!-- Capa do perfil: composição inspirada na referência (avatar circular, nome, verificação, bandeira, visualizações) -->
+<div class="capa" aria-label="Capa do perfil de NNZ">
+  <div class="capa-topo">
+    <svg viewBox="0 0 200 100" preserveAspectRatio="xMaxYMid slice" aria-hidden="true"><path d="M70 100V60l25-30 35 8 20 25v37z" fill="#1a1520"/><path d="M110 20l30 6 6 20-26-4z" fill="#2c2233"/></svg>
+  </div>
+  <div class="capa-barra">
+    <div class="avatar-wrap">
+      <svg class="avatar" viewBox="0 0 120 120" role="img" aria-label="Avatar provisório: personagem encapuzado"><use href="#enc"/></svg>
+      <svg class="bandeira" viewBox="0 0 40 28" role="img" aria-label="Brasil"><rect width="40" height="28" fill="#2e8b3d"/><path d="M20 3 37 14 20 25 3 14z" fill="#f2c94c"/><circle cx="20" cy="14" r="6" fill="#2a4d9b"/></svg>
+    </div>
+    <div class="capa-info">
+      <div class="views"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>1.106 visualizações</div>
+      <div class="nome-linha"><span class="epic" title="Epic Games">EPIC</span><span class="check" title="Verificado">✓</span>nnz on prime</div>
+    </div>
+  </div>
+</div>
+
+<section id="resumo" class="cabecalho">
+  <div>
+    <h1>NNZ</h1>
+    <p class="sub">Notnnz, Jotuta, Robinho, Bigode Capital</p>
+    <p>NNZ é um jogador de Fortnite conhecido por sua capacidade de adaptação em situações extremas, mira excepcional e histórico de jogadas decisivas. Ao longo de sua trajetória, enfrentou jogadores de alto nível, participou de competições importantes e demonstrou capacidade de vencer situações numericamente desfavoráveis.<sup><a href="#ref-1">[1]</a></sup></p>
+    <p>Com cerca de 5.000 horas de jogo, ele é o tipo de oponente que transforma um 1v5 em um problema do outro lado. Sua classificação oficial permanece <strong>???</strong>: o teto do seu potencial ainda não foi totalmente mensurado, e os analistas seguem tentando. Veja <a href="#perfis">Perfis</a>, <a href="#poderes">Powers and Abilities</a> e <a href="#feats">Feats</a>.</p>
+    <p>NNZ construiu sua reputação com experiência, inteligência competitiva, precisão e capacidade de adaptação. Um de seus traços mais impressionantes é jogar de <strong>controle</strong> e ainda assim se equiparar a exímios jogadores de teclado e mouse (PC).<sup><a href="#ref-1">[1]</a></sup></p>
+    <p>Sua mecânica é diferenciada para um jogador de controle, principalmente porque <strong>ele não usa a técnica Claw</strong>, o que torna o desempenho mecânico ainda mais surpreendente. Com aproximadamente 5.000 horas de jogo e uma noção de jogo excepcional, ele compensa uma mecânica levemente abaixo do nível dos profissionais de elite com inteligência, posicionamento e leitura de combate.</p>
+    <p>Seu estilo é fortemente baseado em <strong>Box Fight</strong> e <strong>Pixel Plays</strong>. Quando NNZ leva o adversário para um 1v1 dentro de uma Box Fight, as chances de vitória são extremamente elevadas: ali ele explora a experiência, o domínio de peças, a precisão e o conhecimento das mecânicas de construção. Esta é uma de suas maiores especialidades (veja <a href="#dominio">Domain Expansion: Box Fight</a>).</p>
+    <p class="nota">Use o menu ao lado (ou o botão no topo, no celular) para navegar entre as seções.</p>
+  </div>
+
+  <aside class="infobox" aria-label="Dados gerais">
+    <div class="titulo">NNZ</div>
+    <figure><svg class="retrato" viewBox="0 0 120 120" role="img" aria-label="Retrato provisório de NNZ"><use href="#enc"/></svg><figcaption>Imagem provisória (substituível)</figcaption></figure>
+    <dl>
+      <div class="linha"><dt>Nome</dt><dd>NNZ</dd></div>
+      <div class="linha"><dt>Apelidos</dt><dd>Notnnz, Jotuta, Robinho, Bigode Capital</dd></div>
+      <div class="linha"><dt>Universo</dt><dd>Epic Games (Fortnite)</dd></div>
+      <div class="linha"><dt>Primeira aparição</dt><dd>Chapter 2, Season 1</dd></div>
+      <div class="linha"><dt>Horas de jogo</dt><dd>Aproximadamente 5.000 h de Fortnite</dd></div>
+      <div class="linha"><dt>Input</dt><dd>Controle</dd></div>
+      <div class="linha"><dt>Classificação</dt><dd><span class="selo">???</span> potencial ainda não mensurado</dd></div>
+    </dl>
+  </aside>
+</section>
+
+<!-- ===== PERFIS E ESTATÍSTICAS ===== -->
+<section id="perfis">
+  <h2>Perfis e estatísticas</h2>
+  <p class="nota">Valores marcados com ???? ainda não foram estabelecidos. Nenhuma classificação definitiva foi atribuída a eles.</p>
+  <div class="tabela-scroll">
+  <table>
+    <thead><tr><th>Atributo</th><th>Valor</th><th>Descrição</th><th>Referências</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Tier</th><td class="valor indef">????</td><td>Classificação geral na escala de poder. Ainda não estabelecida: o maior feito confiável do personagem não foi definido, então qualquer número seria chute. Por ora, vale o selo ??? do cabeçalho.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Attack Potency</th><td class="valor">Continental</td><td>Energia destrutiva de um único ataque. O valor vale <strong>com o Rocket Launcher Dourado</strong> em mãos. Sem ele, o personagem volta a ser, tecnicamente, um jogador de Fortnite.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Speed</th><td class="valor">Reaction: &lt; 1 ms<br>Travel: Supersonic / FTL <span class="nota">(provisório)</span></td><td><strong>Reaction Speed:</strong> tempo de reação inferior a 1 milissegundo, uma característica extraordinária de reflexos (percepção, decisão e resposta a um inimigo), sem pretensão de medição científica. Não é velocidade física.<br><strong>Travel Speed:</strong> Supersonic / FTL é uma classificação <strong>provisória e ainda não confirmada</strong>. A velocidade de locomoção ainda está em análise, considerando a combinação de Adrenasuco, Shockwave, uso apropriado do relevo e aproveitamento de impulso e movimentação.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Lifting Strength</th><td class="valor">Superhuman</td><td>Peso que consegue erguer ou sustentar. Justificativa humorística: NNZ carrega outros três indivíduos nas costas sempre que joga Squad, compensando o desempenho dos companheiros. Peso total: três jogadores e algumas expectativas.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Striking Strength</th><td class="valor indef">????</td><td>Força de impacto dos golpes físicos, separada da energia de armas. Ainda não estabelecida.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Durability</th><td class="valor">Planetary</td><td>Dano suportado antes de ser derrotado. O valor vale <strong>com o Suco Slurp Dourado</strong>, que sustenta a resistência do personagem em combate.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Stamina</th><td class="valor">Infinita</td><td>Resistência ao cansaço em partidas longas e decisivas. O valor vale <strong>com o Adrenasuco</strong>: enquanto há adrenalina, não há fadiga.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Range</th><td class="valor">Infinito</td><td>Distância em que ataques e habilidades alcançam o alvo. Na prática, associado à mira de longa distância (veja <a href="#hex">HEX: Mira Perfeita</a>).</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+      <tr><th scope="row">Intelligence</th><td class="valor">Above Average</td><td>Capacidade de ler a partida, escolher confrontos e se adaptar. Acima da média, o que inclui saber a hora de invocar um item mítico.</td><td><a href="#ref-2">[adicionar fonte]</a></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== POWERS AND ABILITIES ===== -->
+<section id="poderes">
+  <h2>Powers and Abilities</h2>
+  <p class="nota">As habilidades em cartões dourados e a Expansão de Domínio têm apresentação especial por serem as mais características do personagem.</p>
+
+  <!-- Habilidade especial 1: Invocação -->
+  <article class="especial" id="invocacao">
+    <header><h4>Invocação (Item Mítico): Grudante de Fragmentação</h4><span class="tag">Item Mítico</span></header>
+    <div class="corpo">
+      <p>Quando NNZ se encontra em uma situação de extremo perigo, pode invocar o <strong>Grudante de Fragmentação</strong>. O item funciona como um recurso de emergência capaz de eliminar instantaneamente o adversário atingido, independentemente da vantagem numérica do oponente.</p>
+      <p>É uma das ferramentas mais perigosas do arsenal de NNZ: quando ela aparece, a desvantagem numérica deixa de ser o assunto da conversa.</p>
+      <dl>
+        <dt>Gatilho</dt><dd>Situação de extremo perigo</dd>
+        <dt>Efeito</dt><dd>Eliminação instantânea do adversário atingido</dd>
+        <dt>Limite</dt><dd>Ignora a vantagem numérica do oponente</dd>
+        <dt>Fonte</dt><dd><a href="#ref-3">[adicionar fonte]</a></dd>
+      </dl>
+    </div>
+  </article>
+
+  <!-- Habilidade especial 2: HEX -->
+  <article class="especial" id="hex">
+    <header><h4>HEX: Mira Perfeita</h4><span class="tag">Habilidade assinatura</span></header>
+    <div class="corpo">
+      <p>Habilidade especial que permite a NNZ alcançar temporariamente um nível absurdo de precisão com armas de longo alcance. Durante a ativação, a mira é praticamente perfeita, capaz de acertar adversários de qualquer distância.</p>
+      <p>Quando usada em conjunto com a <strong>Sniper Ceifadora</strong>, a precisão e a letalidade aumentam ainda mais. HEX é uma das habilidades mais características e temidas do personagem.</p>
+      <dl>
+        <dt>Duração</dt><dd>Temporária</dd>
+        <dt>Efeito</dt><dd>Mira praticamente perfeita em qualquer distância</dd>
+        <dt>Sinergia</dt><dd>Sniper Ceifadora: precisão e letalidade ampliadas</dd>
+        <dt>Fonte</dt><dd><a href="#ref-3">[adicionar fonte]</a></dd>
+      </dl>
+    </div>
+  </article>
+
+  <!-- Habilidade suprema: Domain Expansion -->
+  <article class="dominio" id="dominio">
+    <header><span class="tag">Técnica suprema</span><h4>Domain Expansion: Box Fight</h4><p class="nota">Expansão de Domínio: Box Fight</p></header>
+    <p>Quando NNZ consegue conduzir o adversário para uma Box Fight, suas capacidades de combate são significativamente potencializadas. Nesse ambiente ele usa praticamente todo o conhecimento acumulado em suas aproximadamente 5.000 horas de Fortnite. Dentro do domínio, ele demonstra domínio de:</p>
+    <ul><li>Pixel Plays</li><li>Piece Control</li><li>Prefire</li><li>Edição e reposicionamento</li><li>Leitura de movimentos adversários</li><li>Controle de paredes</li><li>Antecipação de ações</li><li>Combate em espaços confinados</li></ul>
+    <p>A habilidade representa o auge de sua especialização em confrontos individuais.</p>
+    <blockquote class="frase">"Se NNZ te leva para uma Box Fight, a luta provavelmente já está decidida."</blockquote>
+    <p class="nota">Fonte: <a href="#ref-3">[adicionar fonte]</a></p>
+  </article>
+
+  <!-- Habilidade comum -->
+  <details open>
+    <summary>Aim Assist Prime</summary>
+    <div class="corpo">
+      <p>Durante o auge da Aim Assist, NNZ demonstrou possuir uma das melhores e mais eficientes miras entre os jogadores de controle. Sua capacidade de aproveitar o auxílio de mira era excepcional, e confrontos de curta e média distância viravam situações extremamente perigosas para os adversários.</p>
+      <p class="nota">Fonte: <a href="#ref-3">[adicionar fonte]</a></p>
+    </div>
+  </details>
+</section>
+
+<!-- ===== FEATS ===== -->
+<section id="feats">
+  <h2>Feats</h2>
+  <p class="nota">Os feitos em destaque (dourado) são os mais importantes da ficha. Cada um tem espaço para imagem ou fonte, ainda não preenchido.</p>
+  <div class="ferramentas">
+    <button type="button" data-alvo="feats" data-acao="abrir">Expandir tudo</button>
+    <button type="button" data-alvo="feats" data-acao="fechar">Recolher tudo</button>
+  </div>
+
+  <h3 id="feats-competitivos">Competitive Feats</h3>
+  <details open>
+    <summary>Finals da Cash Cup</summary>
+    <div class="corpo"><p>NNZ se classificou para as Finals da Cash Cup e jogou na mesma partida que Felipersa. Chegar a esse ponto exige derrubar a concorrência antes mesmo de a final começar.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details>
+    <summary>Maior rank disponível na temporada mais disputada</summary>
+    <div class="corpo"><p>Alcançou o maior rank disponível no Fortnite durante a temporada considerada a mais disputada da história do jogo, quando o teto do ranking era mais difícil de alcançar.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details>
+    <summary>Capacidade de enfrentar jogadores de alto nível</summary>
+    <div class="corpo"><p>Demonstrou capacidade competitiva para enfrentar jogadores de alto nível, sem precisar de convite especial para entrar na lobby deles.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+
+  <details class="destaque" open>
+    <summary>Console Cup Consistency <span class="tag">Competitivo</span></summary>
+    <div class="corpo"><p>NNZ e Slywtich demonstraram excelente desempenho e consistência em competições de Console Cup. A dupla frequentemente alcançava resultados expressivos e mantinha presença competitiva relevante, embora a classificação para a próxima etapa tenha escapado por uma margem pequena. Ficar tão perto da próxima fase, de forma recorrente, já diz muito sobre o nível da dupla.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details class="destaque" open>
+    <summary>Unbroken Victory Streak – Since December 2019 <span class="tag">Consistência histórica no Battle Royale</span></summary>
+    <div class="corpo"><p>Desde dezembro de 2019, NNZ venceu pelo menos uma partida de Battle Royale em todas as temporadas do Fortnite. São anos consecutivos mantendo a capacidade de vencer, o que mostra adaptação a mudanças de jogo, mapas, armas e metagame. Longevidade e consistência: temporadas passam, e a vitória continua aparecendo.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+
+  <h3 id="feats-combate">Combat Feats</h3>
+  <details class="destaque" open>
+    <summary>Eliminação de Blackoutz <span class="tag">Em destaque</span></summary>
+    <div class="corpo"><p>Eliminou Blackoutz, um dos feitos de maior destaque no histórico de NNZ. Para os padrões do powerscaling, é o tipo de entrada que costuma abrir a conversa quando alguém pergunta "quem é esse?".</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details class="destaque" open>
+    <summary>Múltiplos 1v5 <span class="tag">Em destaque</span></summary>
+    <div class="corpo"><p>Realizou diversos 1v5, vencendo situações de desvantagem numérica extrema. A matemática diz que cinco contra um favorece quem é cinco. NNZ discorda, e já provou isso mais de uma vez.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details class="destaque" open>
+    <summary>1v2 contra Drintt e Reverb simultaneamente <span class="tag">Em destaque</span></summary>
+    <div class="corpo"><p>Conquistou uma vitória em 1v2 contra Drintt e Reverb ao mesmo tempo. Dois adversários de alto nível, um único sobrevivente.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details>
+    <summary>Clutches em situações críticas</summary>
+    <div class="corpo"><p>Executou diversos clutches em momentos críticos, quando a partida parecia decidida contra ele.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+
+  <details class="destaque">
+    <summary>Vitória contra Atin e Lopes (1v2) <span class="tag">Em destaque</span></summary>
+    <div class="corpo"><p>NNZ venceu Atin e Lopes simultaneamente em um confronto 1v2. Ambos jogam de teclado e mouse (PC) e são conhecidos por sua mecânica admirável. O feito ganha peso extra porque os dois pertencem à geração que antecedeu NNZ. Dois adversários mecanicamente habilidosos, e o que superou os dois estava de controle.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details class="destaque">
+    <summary>Sobrevivência contra Slywtich, Zorebinha e Lacerda <span class="tag">Em destaque</span></summary>
+    <div class="corpo"><p>Em diversas ocasiões, NNZ mostrou superioridade em mapas que simulavam desvantagem numérica, especialmente cenários de 1v3 e 1v4. Contra Slywtich, Zorebinha e Lacerda, permaneceu vivo por diversas rodadas, com domínio de posicionamento, movimentação, leitura de adversários e sobrevivência.</p><p>Slywtich, em especial, é um adversário relevante e de alto nível, e não deve ser tratado como um oponente qualquer.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+
+  <h3 id="feats-tecnicos">Technical Feats</h3>
+  <details class="destaque" open>
+    <summary>Prefire Mastery <span class="tag">Técnica</span></summary>
+    <div class="corpo"><p>No auge de sua performance, NNZ dominou o Prefire: um disparo feito exatamente no intervalo entre a quebra de uma parede adversária e a substituição dessa parede pelo oponente. NNZ antecipa o momento exato da quebra e atira dentro dessa pequena janela.</p>
+    <ul class="lista"><li>Tempo de reação extraordinário</li><li>Antecipação de movimentos</li><li>Leitura de padrões adversários</li><li>Precisão temporal</li><li>Conhecimento avançado das mecânicas de construção</li></ul>
+    <p>A técnica é especialmente perigosa em confrontos de Box Fight.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+
+  <h3 id="feats-legado">Legacy Feats</h3>
+  <details>
+    <summary>Superou Pedras e Slywtich</summary>
+    <div class="corpo"><p>Superou seus antecessores, Pedras e Slywtich, assumindo o lugar deles na sequência de jogadores.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details>
+    <summary>Superou Thales, da geração seguinte</summary>
+    <div class="corpo"><p>Posteriormente, também superou Thales, pertencente à geração seguinte. Ou seja, venceu os mais velhos e depois os mais novos.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+  <details>
+    <summary>Referência dentro da sequência de jogadores</summary>
+    <div class="corpo"><p>Consolidou sua posição como uma referência dentro dessa sequência de jogadores.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+<details class="destaque" open>
+    <summary>Superação dos antecessores: a sequência histórica <span class="tag">Em destaque</span></summary>
+    <div class="corpo"><p>NNZ superou os seguintes jogadores, bem como todos os que vieram antes dele nessa sequência histórica:</p>
+    <ul class="lista"><li>Slywtich</li><li>Pedras</li><li>GS Clan</li><li>Atin</li><li>Lopes</li><li>Pimpas</li><li>Todos os demais jogadores que vieram antes de NNZ nessa sequência</li></ul>
+    <p><strong>Contexto:</strong> grande parte desses jogadores já conhecia o Fortnite antes da chegada de NNZ e teve a oportunidade de aprender e desenvolver suas habilidades em um período anterior do jogo. NNZ começou somente no início do Chapter 2, Season 1, chegando aproximadamente um ou dois anos depois de parte dessa geração.</p>
+    <p>Mesmo com essa desvantagem temporal e a experiência acumulada pelos antecessores, NNZ os superou e consolidou seu próprio legado, um feito que mostra capacidade de evolução, adaptação e aprendizado acelerado.</p><div class="slot">Espaço para imagem ou fonte</div><p class="nota">Referência: <a href="#ref-4">[adicionar fonte]</a></p></div>
+  </details>
+</section>
+
+<!-- ===== WEAKNESSES ===== -->
+<section id="fraquezas">
+  <h2>Weaknesses</h2>
+  <h3>Instabilidade Mental <span class="nota">(principal fraqueza)</span></h3>
+  <p>A confiança de NNZ tem influência direta sobre o desempenho. Quando está confiante, ele mostra seu verdadeiro potencial. Quando a confiança diminui, a gameplay pode sofrer uma queda significativa, afetando precisão, tomada de decisões e consistência.</p>
+  <h3>Limitações de Controle</h3>
+  <p>Jogar com controle limita algumas possibilidades mecânicas e de movimentação em comparação com jogadores de teclado e mouse. NNZ compensa com mira, experiência e habilidade, mas a diferença continua sendo uma restrição técnica ao seu potencial.</p>
+  <p class="nota">Referência: <a href="#ref-5">[adicionar fonte]</a></p>
+</section>
+
+<!-- ===== REFERENCES ===== -->
+<section id="referencias">
+  <h2>References</h2>
+  <p class="nota">Espaços reservados para as fontes. Nenhuma fonte foi inventada; substitua cada item pelo link ou descrição real.</p>
+  <ol class="refs">
+    <li id="ref-1">[adicionar fonte] Descrição geral e introdução do personagem.</li>
+    <li id="ref-2">[adicionar fonte] Estatísticas e atributos.</li>
+    <li id="ref-3">[adicionar fonte] Powers and Abilities.</li>
+    <li id="ref-4">[adicionar fonte] Feats (competitivos, de combate e de legado).</li>
+    <li id="ref-5">[adicionar fonte] Weaknesses.</li>
+  </ol>
+</section>
+
+<!-- ===== UNRESOLVED MATCHUPS (seção separada, depois das referências) ===== -->
+<section id="matchups" class="registro">
+  <h2>Unresolved Matchups – The Zone Wars Debate</h2>
+  <span class="estado">INCONCLUSIVE / DEBATE PENDENTE</span>
+  <p>Este confronto permanece como uma das discussões ainda não resolvidas sobre o verdadeiro potencial de NNZ. Não existe resultado oficialmente estabelecido, e cada lado tem seus argumentos.</p>
+  <div class="versus">
+    <div class="lado"><div class="nnz">NNZ</div>Variável principal: um jogador, cinco adversários.</div>
+    <div class="vs">VS</div>
+    <div class="lado">Adversários (variáveis individuais):<ol><li><span class="perfil"><button type="button" class="perfil-link" aria-haspopup="true">Drintt</button><span class="popup" role="status">Profile not yet available (character profile under development)</span></span></li><li><span class="perfil"><button type="button" class="perfil-link" aria-haspopup="true">Lacerda</button><span class="popup" role="status">Profile not yet available (character profile under development)</span></span></li><li><span class="perfil"><button type="button" class="perfil-link" aria-haspopup="true">Slywtich</button><span class="popup" role="status">Profile not yet available (character profile under development)</span></span></li><li><span class="perfil"><button type="button" class="perfil-link" aria-haspopup="true">Paulo</button><span class="popup" role="status">Profile not yet available (character profile under development)</span></span></li><li><span class="perfil"><button type="button" class="perfil-link" aria-haspopup="true">Miguel</button><span class="popup" role="status">Profile not yet available (character profile under development)</span></span></li></ol><p class="nota">Clique em um nome para abrir o perfil.</p></div>
+  </div>
+  <div class="tabela-scroll"><table class="condicoes">
+    <tbody>
+      <tr><th scope="row">Confronto</th><td>NNZ vs Drintt, Lacerda, Slywtich, Paulo e Miguel</td></tr>
+      <tr><th scope="row">Modo de jogo</th><td>Zone Wars</td></tr>
+      <tr><th scope="row">Armas permitidas</th><td>Somente escopetas</td></tr>
+      <tr><th scope="row">Formato</th><td>NNZ contra os cinco adversários (1v5)</td></tr>
+      <tr><th scope="row">Resultado oficial</th><td>Nenhum</td></tr>
+      <tr><th scope="row">Classificação</th><td>INCONCLUSIVE / DEBATE PENDENTE</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>Ficha em construção. <a href="#resumo">Voltar ao topo</a></footer>
+
+</main>
+</div>
+
+<script>
+/* ===== 9. INTERATIVIDADE ===== */
+(function () {
+  var toc = document.getElementById('toc');
+  var btn = document.getElementById('menuBtn');
+
+  // Abre/fecha o menu no celular
+  btn.addEventListener('click', function () {
+    var aberto = toc.classList.toggle('aberto');
+    btn.setAttribute('aria-expanded', aberto);
+  });
+
+  // Fecha o menu ao escolher uma seção e abre o item expansível alvo, se houver
+  toc.addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') {
+      toc.classList.remove('aberto');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Botões "Expandir tudo" e "Recolher tudo"
+  document.querySelectorAll('button[data-alvo]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var abrir = b.dataset.acao === 'abrir';
+      document.querySelectorAll('#' + b.dataset.alvo + ' details').forEach(function (d) { d.open = abrir; });
+    });
+  });
+
+  // Destaca no menu a seção visível
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a'));
+  var alvos = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function marcar() {
+    var atual = 0, y = window.scrollY + 120;
+    alvos.forEach(function (el, i) { if (el && el.offsetTop <= y) atual = i; });
+    links.forEach(function (a, i) { a.classList.toggle('ativo', i === atual); });
+  }
+  window.addEventListener('scroll', marcar, { passive: true });
+  marcar();
+})();
+</script>
+<script>
+/* ===== 10. POP-UP DOS PERFIS AINDA NÃO PUBLICADOS ===== */
+(function () {
+  var itens = document.querySelectorAll('.perfil');
+  function fechar() { itens.forEach(function (p) { p.classList.remove('aberto'); }); }
+  itens.forEach(function (p) {
+    p.querySelector('.perfil-link').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var abrir = !p.classList.contains('aberto');
+      fechar();
+      if (abrir) p.classList.add('aberto');
+    });
+  });
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+})();
+</script>
+</body>
+</html>
